@@ -17,7 +17,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         gradient: "btn-gradient rounded-full [&_span]:relative [&_span]:z-[1]",
         glass: "btn-glass",
-        hero: "btn-gradient rounded-full text-base pulse-glow [&_span]:relative [&_span]:z-[1]",
+        hero: "btn-gradient rounded-full text-base [&_span]:relative [&_span]:z-[1]",
         heroOutline: "btn-glass rounded-full text-base border border-border",
       },
       size: {
