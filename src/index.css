@@ -266,7 +266,9 @@
     opacity: 1;
   }
 
-  .btn-gradient span {
+  .btn-gradient span,
+  .btn-gradient svg,
+  .btn-gradient > * {
     position: relative;
     z-index: 1;
   }
