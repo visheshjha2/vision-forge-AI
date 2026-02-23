@@ -236,7 +236,7 @@
   /* Premium button styles */
   .btn-gradient {
     @apply relative overflow-hidden rounded-full px-8 py-3 font-medium transition-all duration-300;
-    color: hsl(0 0% 100%);
+    color: hsl(0 0% 100%) !important;
     background: linear-gradient(
       135deg,
       hsl(var(--gradient-pink)) 0%,
@@ -247,6 +247,7 @@
   .btn-gradient:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px hsl(var(--gradient-purple) / 0.4);
+    color: hsl(0 0% 100%) !important;
   }
 
   .btn-gradient::before {
@@ -271,6 +272,7 @@
   .btn-gradient > * {
     position: relative;
     z-index: 1;
+    color: inherit !important;
   }
 
   .btn-glass {
