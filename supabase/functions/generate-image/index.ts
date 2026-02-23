@@ -51,12 +51,20 @@ serve(async (req) => {
 
     const type = model === "model2" ? "model2" : "model1";
 
+    // Map aspect ratio to pixel dimensions
+    const sizeMap: Record<string, { width: number; height: number }> = {
+      "1:1": { width: 1024, height: 1024 },
+      "16:9": { width: 1920, height: 1080 },
+      "9:16": { width: 1080, height: 1920 },
+    };
+    const dimensions = sizeMap[size] || sizeMap["1:1"];
+
     // Both models use Lovable AI Gateway with different underlying models
     const aiModel = model === "model2"
       ? "google/gemini-2.5-flash-image"
       : "google/gemini-3-pro-image-preview";
 
-    const enhancedPrompt = `Generate a ${style} style image with aspect ratio ${size}. ${prompt}`;
+    const enhancedPrompt = `Generate a ${style} style image. The image must be exactly ${dimensions.width}x${dimensions.height} pixels (aspect ratio ${size}). ${prompt}`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
