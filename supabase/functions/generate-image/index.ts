@@ -22,7 +22,7 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } },
@@ -95,7 +95,7 @@ serve(async (req) => {
 
       const enhancedPrompt = `${style} style, ${prompt}`;
       const hfResponse = await fetch(
-        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+        "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
         {
           method: "POST",
           headers: {
