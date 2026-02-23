@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Image, Wand2, Download, RotateCcw, Loader2, Upload, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,6 +25,12 @@ const styles = [
   { value: 'abstract', label: 'Abstract' },
 ];
 
+interface ProjectImage {
+  id: string;
+  result_url: string;
+  prompt: string;
+}
+
 const Generate = () => {
   const [activeTab, setActiveTab] = useState('model1');
   const [prompt, setPrompt] = useState('');
@@ -40,15 +47,43 @@ const Generate = () => {
   const [imageSource, setImageSource] = useState<'upload' | 'project'>('upload');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Project images picker
+  const [projectImages, setProjectImages] = useState<ProjectImage[]>([]);
+  const [projectPickerOpen, setProjectPickerOpen] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+
+  const fetchProjectImages = async () => {
+    if (!user) return;
+    setLoadingProjects(true);
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, result_url, prompt')
+        .eq('user_id', user.id)
+        .not('result_url', 'is', null)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setProjectImages((data as ProjectImage[]) || []);
+    } catch {
+      toast({ title: 'Failed to load projects', variant: 'destructive' });
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const handleSelectProjectImage = (img: ProjectImage) => {
+    setSourceImage(img.result_url);
+    setSourceImageName(img.prompt.slice(0, 40));
+    setProjectPickerOpen(false);
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) {
       toast({ title: 'Invalid file type', description: 'Please upload an image file.', variant: 'destructive' });
       return;
     }
-
     const reader = new FileReader();
     reader.onload = (event) => {
       setSourceImage(event.target?.result as string);
@@ -62,18 +97,14 @@ const Generate = () => {
       toast({ title: 'Please enter a prompt', description: 'Describe what you want to create.', variant: 'destructive' });
       return;
     }
-
     setLoading(true);
     setResult(null);
-
     try {
       const { data, error } = await supabase.functions.invoke('generate-image', {
         body: { prompt, size, style, model: activeTab },
       });
-
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-
       setResult(data.image_url);
       toast({ title: 'Image generated!', description: 'Your image has been saved to Projects.' });
     } catch (error: any) {
@@ -89,18 +120,14 @@ const Generate = () => {
       toast({ title: 'Please select an image', description: 'Upload an image to enhance.', variant: 'destructive' });
       return;
     }
-
     setLoading(true);
     setResult(null);
-
     try {
       const { data, error } = await supabase.functions.invoke('enhance-image', {
         body: { sourceImage, enhancePrompt, style },
       });
-
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-
       setResult(data.image_url);
       toast({ title: 'Image enhanced!', description: 'Your enhanced image has been saved to Projects.' });
     } catch (error: any) {
@@ -148,10 +175,10 @@ const Generate = () => {
             <Tabs value={activeTab} onValueChange={(tab) => { setActiveTab(tab); setResult(null); }}>
               <TabsList className="w-full mb-6">
                 <TabsTrigger value="model1" className="flex-1">
-                  <Image className="w-4 h-4 mr-2" />Model 1 (HF)
+                  <Image className="w-4 h-4 mr-2" />Model 1
                 </TabsTrigger>
                 <TabsTrigger value="model2" className="flex-1">
-                  <Image className="w-4 h-4 mr-2" />Model 2 (Gemini)
+                  <Image className="w-4 h-4 mr-2" />Model 2
                 </TabsTrigger>
                 <TabsTrigger value="enhance" className="flex-1">
                   <Wand2 className="w-4 h-4 mr-2" />Enhance
@@ -207,7 +234,7 @@ const Generate = () => {
                     <Button type="button" variant={imageSource === 'upload' ? 'default' : 'outline'} size="sm" onClick={() => setImageSource('upload')}>
                       <Upload className="w-4 h-4 mr-2" />Upload
                     </Button>
-                    <Button type="button" variant={imageSource === 'project' ? 'default' : 'outline'} size="sm" onClick={() => setImageSource('project')}>
+                    <Button type="button" variant={imageSource === 'project' ? 'default' : 'outline'} size="sm" onClick={() => { setImageSource('project'); fetchProjectImages(); setProjectPickerOpen(true); }}>
                       <FolderOpen className="w-4 h-4 mr-2" />My Projects
                     </Button>
                   </div>
@@ -215,7 +242,7 @@ const Generate = () => {
 
                 <div className="space-y-2">
                   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                  <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
+                  <div onClick={() => { if (imageSource === 'upload') fileInputRef.current?.click(); else { fetchProjectImages(); setProjectPickerOpen(true); } }} className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
                     {sourceImage ? (
                       <div className="space-y-2">
                         <img src={sourceImage} alt="Source" className="max-h-32 mx-auto rounded-lg object-contain" />
@@ -225,7 +252,7 @@ const Generate = () => {
                     ) : (
                       <div className="space-y-2">
                         <Upload className="w-8 h-8 mx-auto text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Click to upload an image</p>
+                        <p className="text-sm text-muted-foreground">Click to upload or select from projects</p>
                       </div>
                     )}
                   </div>
@@ -300,6 +327,37 @@ const Generate = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Project Image Picker Dialog */}
+      <Dialog open={projectPickerOpen} onOpenChange={setProjectPickerOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Select from My Projects</DialogTitle>
+          </DialogHeader>
+          {loadingProjects ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : projectImages.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No images found in your projects</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3 max-h-96 overflow-y-auto p-1">
+              {projectImages.map((img) => (
+                <button
+                  key={img.id}
+                  onClick={() => handleSelectProjectImage(img)}
+                  className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors"
+                >
+                  <img src={img.result_url} alt={img.prompt} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
