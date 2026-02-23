@@ -24,6 +24,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -46,86 +49,50 @@ serve(async (req) => {
       });
     }
 
-    let imageBase64: string;
     const type = model === "model2" ? "model2" : "model1";
 
-    if (model === "model2") {
-      // Use Lovable AI (Gemini) for Model 2
-      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-      if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    // Both models use Lovable AI Gateway with different underlying models
+    const aiModel = model === "model2"
+      ? "google/gemini-2.5-flash-image"
+      : "google/gemini-3-pro-image-preview";
 
-      const enhancedPrompt = `Generate a ${style} style image with aspect ratio ${size}. ${prompt}`;
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image",
-          messages: [{ role: "user", content: enhancedPrompt }],
-          modalities: ["image", "text"],
-        }),
-      });
+    const enhancedPrompt = `Generate a ${style} style image with aspect ratio ${size}. ${prompt}`;
 
-      if (!aiResponse.ok) {
-        const status = aiResponse.status;
-        if (status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        if (status === 402) {
-          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits." }), {
-            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        throw new Error(`AI gateway error: ${status}`);
+    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: aiModel,
+        messages: [{ role: "user", content: enhancedPrompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+
+    if (!aiResponse.ok) {
+      const status = aiResponse.status;
+      if (status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-
-      const aiData = await aiResponse.json();
-      const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-      if (!imageUrl) throw new Error("No image generated");
-
-      imageBase64 = imageUrl.replace(/^data:image\/\w+;base64,/, "");
-    } else {
-      // Use Hugging Face for Model 1
-      const HF_KEY = Deno.env.get("HUGGING_FACE_API_KEY");
-      if (!HF_KEY) throw new Error("HUGGING_FACE_API_KEY is not configured");
-
-      const enhancedPrompt = `${style} style, ${prompt}`;
-      const hfResponse = await fetch(
-        "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${HF_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ inputs: enhancedPrompt }),
-        }
-      );
-
-      if (!hfResponse.ok) {
-        const errText = await hfResponse.text();
-        console.error("HF error:", hfResponse.status, errText);
-        if (hfResponse.status === 503) {
-          return new Response(JSON.stringify({ error: "Model is loading. Please try again in ~30 seconds." }), {
-            status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-        throw new Error(`Hugging Face error: ${hfResponse.status}`);
+      if (status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits." }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-
-      const imageBlob = await hfResponse.arrayBuffer();
-      const bytes = new Uint8Array(imageBlob);
-      // Convert to base64
-      let binary = "";
-      for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      imageBase64 = btoa(binary);
+      const errText = await aiResponse.text();
+      console.error("AI gateway error:", status, errText);
+      throw new Error(`AI gateway error: ${status}`);
     }
+
+    const aiData = await aiResponse.json();
+    const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!imageUrl) throw new Error("No image generated");
+
+    const imageBase64 = imageUrl.replace(/^data:image\/\w+;base64,/, "");
 
     // Decode base64 and upload to storage
     const rawBytes = Uint8Array.from(atob(imageBase64), (c) => c.charCodeAt(0));
