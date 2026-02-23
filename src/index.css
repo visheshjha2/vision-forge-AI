@@ -237,6 +237,7 @@
   .btn-gradient {
     @apply relative overflow-hidden rounded-full px-8 py-3 font-medium transition-all duration-300;
     color: hsl(0 0% 100%) !important;
+    isolation: isolate;
     background: linear-gradient(
       135deg,
       hsl(var(--gradient-pink)) 0%,
@@ -254,6 +255,7 @@
     content: "";
     position: absolute;
     inset: 0;
+    z-index: -1;
     background: linear-gradient(
       135deg,
       hsl(var(--gradient-purple)) 0%,
@@ -265,14 +267,6 @@
 
   .btn-gradient:hover::before {
     opacity: 1;
-  }
-
-  .btn-gradient span,
-  .btn-gradient svg,
-  .btn-gradient > * {
-    position: relative;
-    z-index: 1;
-    color: inherit !important;
   }
 
   .btn-glass {
