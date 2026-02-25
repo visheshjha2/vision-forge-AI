@@ -43,7 +43,7 @@ export const Navbar = () => {
           isScrolled ? 'glass-nav py-3' : 'py-5'
         }`}
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gradient-pink to-gradient-purple flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">

@@ -68,7 +68,7 @@ const Settings = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <h1 className="text-3xl font-bold mb-2">Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Settings</h1>
         <p className="text-muted-foreground mb-8">Manage your account settings</p>
 
         <div className="dashboard-card">
