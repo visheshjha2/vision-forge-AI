@@ -165,12 +165,12 @@ const Generate = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto w-full">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <h1 className="text-3xl font-bold mb-2">Generate</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Generate</h1>
         <p className="text-muted-foreground mb-8">Create stunning AI-powered images</p>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <div className="dashboard-card">
             <Tabs value={activeTab} onValueChange={(tab) => { setActiveTab(tab); setResult(null); }}>
               <TabsList className="w-full mb-6">
@@ -296,7 +296,7 @@ const Generate = () => {
 
           <div className="dashboard-card">
             <h3 className="font-semibold mb-4">Preview</h3>
-            <div className="aspect-square rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden">
+            <div className="aspect-square sm:aspect-square rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden">
               {loading ? (
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gradient-pink to-gradient-purple flex items-center justify-center shadow-lg animate-pulse">

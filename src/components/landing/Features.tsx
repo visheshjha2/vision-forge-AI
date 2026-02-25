@@ -29,7 +29,7 @@ export const Features = () => {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-tr from-gradient-yellow/20 to-transparent rounded-full blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}

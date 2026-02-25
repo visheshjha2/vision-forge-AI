@@ -15,40 +15,40 @@ export const Hero = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.6, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-gradient-pink/40 to-transparent blur-3xl floating"
+          className="absolute -top-40 -right-40 w-[300px] h-[300px] md:w-[600px] md:h-[600px] rounded-full bg-gradient-to-br from-gradient-pink/40 to-transparent blur-3xl floating"
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.5, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
-          className="absolute top-1/2 -left-60 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-gradient-purple/30 to-transparent blur-3xl floating-delayed"
+          className="absolute top-1/2 -left-60 w-[250px] h-[250px] md:w-[500px] md:h-[500px] rounded-full bg-gradient-to-tr from-gradient-purple/30 to-transparent blur-3xl floating-delayed"
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 0.4, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut', delay: 0.4 }}
-          className="absolute -bottom-40 right-1/4 w-[400px] h-[400px] rounded-full bg-gradient-to-t from-gradient-yellow/40 to-transparent blur-3xl floating-slow"
+          className="absolute -bottom-40 right-1/4 w-[200px] h-[200px] md:w-[400px] md:h-[400px] rounded-full bg-gradient-to-t from-gradient-yellow/40 to-transparent blur-3xl floating-slow"
         />
 
         <motion.div
           animate={{ y: [0, -30, 0], rotate: [0, 10, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/4 right-1/4 w-20 h-20 rounded-2xl bg-gradient-to-br from-gradient-pink to-gradient-purple opacity-60 glow-pink"
+          className="absolute top-1/4 right-1/4 w-10 h-10 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-gradient-pink to-gradient-purple opacity-60 glow-pink hidden sm:block"
           style={{ transform: 'rotate(45deg)' }}
         />
         <motion.div
           animate={{ y: [0, 20, 0], rotate: [0, -15, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="absolute bottom-1/3 left-1/4 w-16 h-16 rounded-full bg-gradient-to-br from-gradient-yellow to-gradient-peach opacity-70 glow-yellow"
+          className="absolute bottom-1/3 left-1/4 w-10 h-10 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-gradient-yellow to-gradient-peach opacity-70 glow-yellow hidden sm:block"
         />
         <motion.div
           animate={{ y: [0, -25, 0], x: [0, 15, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-          className="absolute top-1/2 right-[16%] w-12 h-12 shape-blob bg-gradient-to-br from-gradient-purple to-gradient-pink opacity-50 glow-purple"
+          className="absolute top-1/2 right-[16%] w-8 h-8 md:w-12 md:h-12 shape-blob bg-gradient-to-br from-gradient-purple to-gradient-pink opacity-50 glow-purple hidden sm:block"
         />
       </div>
 
-      <div className="container mx-auto px-6 pt-24 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 pt-24 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -64,7 +64,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-shadow-soft"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-shadow-soft"
           >
             Forge Your
             <br />
@@ -75,7 +75,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto"
+            className="text-base sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-2xl mx-auto px-2"
           >
             Transform your ideas into stunning images with the power of artificial intelligence. Create, iterate, and inspire.
           </motion.p>
@@ -108,7 +108,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-20 grid grid-cols-3 gap-8 max-w-lg mx-auto"
+            className="mt-12 sm:mt-20 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg mx-auto"
           >
             {[
               { value: '2', label: 'AI Models' },
@@ -116,7 +116,7 @@ export const Hero = () => {
               { value: '99%', label: 'Satisfaction' },
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold gradient-text">{stat.value}</div>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text">{stat.value}</div>
                 <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
               </div>
             ))}

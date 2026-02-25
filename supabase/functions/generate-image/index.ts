@@ -64,7 +64,16 @@ serve(async (req) => {
       ? "google/gemini-2.5-flash-image"
       : "google/gemini-3-pro-image-preview";
 
-    const enhancedPrompt = `Generate a ${style} style image. The image must be exactly ${dimensions.width}x${dimensions.height} pixels (aspect ratio ${size}). ${prompt}`;
+    const styleDescriptions: Record<string, string> = {
+      realistic: "photorealistic, high detail, natural lighting, lifelike textures",
+      artistic: "artistic, painterly, expressive brushstrokes, creative composition",
+      anime: "anime style, Japanese animation aesthetic, vibrant colors, cel-shaded",
+      cinematic: "cinematic, dramatic lighting, film-like composition, moody atmosphere, widescreen feel",
+      abstract: "abstract art, non-representational, geometric shapes, bold colors, experimental composition",
+    };
+    const styleDesc = styleDescriptions[style] || style;
+
+    const enhancedPrompt = `Create an image in a ${styleDesc} style. The image must be exactly ${dimensions.width}x${dimensions.height} pixels (aspect ratio ${size}). Important: the visual style MUST be ${style}. ${prompt}`;
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

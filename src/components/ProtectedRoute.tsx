@@ -38,11 +38,11 @@ export const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
       <div className="min-h-screen flex w-full bg-muted/30">
         <DashboardSidebar />
         <main className="flex-1 flex flex-col">
-          <header className="h-16 border-b border-border bg-background/80 backdrop-blur-xl flex items-center px-6 sticky top-0 z-40">
-            <SidebarTrigger className="mr-4" />
+          <header className="h-14 sm:h-16 border-b border-border bg-background/80 backdrop-blur-xl flex items-center px-3 sm:px-6 sticky top-0 z-40">
+            <SidebarTrigger className="mr-2 sm:mr-4" />
             <div className="flex-1" />
           </header>
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-3 sm:p-6 overflow-x-hidden">
             <Outlet />
           </div>
         </main>

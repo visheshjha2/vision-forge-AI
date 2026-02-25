@@ -29,8 +29,8 @@ export const Mission = () => {
         className="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-gradient-to-br from-gradient-yellow/30 to-gradient-peach/30 blur-xl"
       />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -49,7 +49,7 @@ export const Mission = () => {
               Our mission is to make AI-powered creativity accessible, intuitive, and inspiring. Whether you're a professional artist or just starting your creative journey, we're here to amplify your vision.
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-3 sm:gap-6">
               {[
                 { icon: Heart, label: 'Passion' },
                 { icon: Rocket, label: 'Innovation' },
