@@ -61,8 +61,8 @@ serve(async (req) => {
 
     // Both models use Lovable AI Gateway with different underlying models
     const aiModel = model === "model2"
-      ? "google/gemini-2.5-flash-image"
-      : "google/gemini-3-pro-image-preview";
+      ? "google/gemini-3-pro-image-preview"
+      : "google/gemini-2.5-flash-image";
 
     const styleDescriptions: Record<string, string> = {
       realistic: "photorealistic, high detail, natural lighting, lifelike textures",
